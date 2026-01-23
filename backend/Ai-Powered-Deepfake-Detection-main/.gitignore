@@ -1,0 +1,29 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+.alembic
+
+# Uploads
+uploads/
+
+# Database
+*.db
+*.sqlite3
+alembic/versions/*.pyc
+alembic
+alembic.ini
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
