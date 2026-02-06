@@ -1,4 +1,4 @@
-import { Image, FileText, Video, Lock, Zap, BarChart3 } from 'lucide-react';
+import { Image, Video, FileText, Lock, Zap, BarChart3 } from 'lucide-react';
 
 const features = [
   {
@@ -7,14 +7,14 @@ const features = [
     description: 'Analyze metadata, pixel patterns, and ML signatures to detect AI-generated images.',
   },
   {
-    icon: FileText,
-    title: 'Text Analysis',
-    description: 'Language heuristics and model fingerprinting to identify AI-written content.',
+    icon: Video,
+    title: 'Video Detection',
+    description: 'Detect deepfakes and manipulated videos using frame-by-frame analysis and temporal consistency checks.',
   },
   {
-    icon: Video,
-    title: 'Video Verification',
-    description: 'Frame-by-frame analysis to detect deepfakes and AI-generated videos.',
+    icon: FileText,
+    title: 'Text Analysis',
+    description: 'Identify AI-generated text by analyzing linguistic patterns, coherence, and statistical anomalies.',
   },
   {
     icon: Zap,

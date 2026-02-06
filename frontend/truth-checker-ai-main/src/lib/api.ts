@@ -96,7 +96,7 @@ class ApiClient {
 
   async uploadContent(
     content: File | string,
-    contentType: 'image' | 'text' | 'video'
+    contentType: 'image' | 'video' | 'text'
   ): Promise<any> {
     const formData = new FormData();
 

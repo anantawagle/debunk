@@ -4,7 +4,7 @@ const steps = [
   {
     icon: Upload,
     title: 'Upload Content',
-    description: 'Drop an image, paste text, or upload a video file for analysis.',
+    description: 'Drop an image file for analysis.',
   },
   {
     icon: Cpu,
@@ -27,7 +27,7 @@ export function HowItWorks() {
             How It <span className="text-gradient">Works</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Verify content authenticity in three simple steps
+            Verify image authenticity in three simple steps
           </p>
         </div>
 

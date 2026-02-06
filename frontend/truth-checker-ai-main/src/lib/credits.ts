@@ -11,7 +11,7 @@ export interface UsageData {
 
 export interface Detection {
   id: string;
-  contentType: 'image' | 'text' | 'video';
+  contentType: 'image' | 'video' | 'text';
   classification: 'AI' | 'Human' | 'Inconclusive';
   probability: number;
   source: string;

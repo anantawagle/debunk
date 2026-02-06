@@ -88,7 +88,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
             <p className="text-muted-foreground text-sm">
               {mode === 'login'
                 ? 'Sign in to access your detection history and credits.'
-                : 'Sign up to get 10 additional free credits.'}
+                : 'Sign up and create your free account today!'}
             </p>
           </div>
 

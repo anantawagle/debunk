@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Zap, User, CreditCard } from 'lucide-react';
+import { Zap, User } from 'lucide-react';
 import { apiClient } from '@/lib/api';
-import { getRemainingCredits } from '@/lib/credits';
 import { useState, useEffect } from 'react';
 
 interface HeaderProps {
@@ -11,17 +10,14 @@ interface HeaderProps {
 
 export function Header({ onSignInClick }: HeaderProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [credits, setCredits] = useState(0);
 
   useEffect(() => {
     // Check if user is authenticated
     setIsLoggedIn(apiClient.isAuthenticated());
-    setCredits(getRemainingCredits());
 
     // Listen for authentication changes
     const checkAuth = () => {
       setIsLoggedIn(apiClient.isAuthenticated());
-      setCredits(getRemainingCredits());
     };
     window.addEventListener('storage', checkAuth);
 
@@ -59,13 +55,6 @@ export function Header({ onSignInClick }: HeaderProps) {
 
           {/* Right side */}
           <div className="flex items-center gap-3">
-            {/* Credits indicator */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary border border-border">
-              <CreditCard className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">{credits}</span>
-              <span className="text-xs text-muted-foreground">credits</span>
-            </div>
-
             {isLoggedIn ? (
                <Link to="/dashboard">
                  <Button variant="outline" size="sm" className="gap-2">

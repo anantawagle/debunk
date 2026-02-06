@@ -21,7 +21,7 @@ export default function Index() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
 
-  const handleAnalyze = useCallback(async (content: File | string, type: 'image' | 'text' | 'video') => {
+  const handleAnalyze = useCallback(async (content: File | string, type: 'image' | 'video' | 'text') => {
     if (!apiClient.isAuthenticated()) {
       toast.error('Please sign in to use the detection service.', {
         action: {
@@ -63,8 +63,8 @@ export default function Index() {
               probability: detection.confidence_score || 0.5,
               source: detection.model_used || 'AI Analysis',
               timestamp: Date.now(),
-              snippet: type === 'text' ? (content as string).slice(0, 100) : undefined,
-              thumbnail: type === 'image' && content instanceof File ? URL.createObjectURL(content) : undefined,
+              snippet: undefined,
+              thumbnail: (type === 'image' || type === 'video') && content instanceof File ? URL.createObjectURL(content) : undefined,
             };
 
             setResult(resultData);
@@ -114,10 +114,10 @@ export default function Index() {
         <div className="container mx-auto px-4 relative z-10">
           {/* Hero content */}
           <div className="text-center mb-12 max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-sm mb-6 animate-fade-in">
+            {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-sm mb-6 animate-fade-in">
               <Sparkles className="h-4 w-4 text-primary" />
               <span>Distinguishing AI vs Real</span>
-            </div>
+            </div> */}
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 animate-fade-in" style={{ animationDelay: '100ms' }}>
               Verify If Content Is{' '}
@@ -125,7 +125,7 @@ export default function Index() {
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '200ms' }}>
-              DebunkAI detects AI-generated images, text, and videos with advanced machine learning. 
+              DebunkAI detects AI-generated images with advanced machine learning.
               Know what's real in a world of synthetic content.
             </p>
 

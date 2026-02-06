@@ -14,7 +14,7 @@ const plans = [
     pricePerCredit: 0.20,
     features: [
       '25 detection credits',
-      'Image, text & video analysis',
+      'Image analysis',
       'Detection history',
       'Email support',
     ],
@@ -51,7 +51,7 @@ const plans = [
 const faqs = [
   {
     question: 'What counts as one credit?',
-    answer: 'Each detection (image, text, or video) uses 1 credit, regardless of content type or file size.',
+    answer: 'Each detection (image) uses 1 credit, regardless of content type or file size.',
   },
   {
     question: 'Do credits expire?',
