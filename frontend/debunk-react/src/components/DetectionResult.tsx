@@ -11,7 +11,21 @@ interface DetectionResultProps {
 export function DetectionResult({ result, onClose }: DetectionResultProps) {
   const emoji = getConfidenceEmoji(result.probability, result.classification);
   const confidenceLabel = getConfidenceLabel(result.probability);
-  const percentage = Math.round(result.probability * 100);
+  
+  // Handle confidence display:
+  // - If 0% confidence → show as Human 100%
+  // - If AI and confidence < 50 → show as 100 - confidence
+  // - Otherwise show as-is
+  let displayPercentage: number;
+  if (result.probability === 0) {
+    displayPercentage = 100; // 0% AI = 100% Human
+  } else if (result.classification === 'AI' && result.probability < 50) {
+    displayPercentage = Math.round(100 - result.probability);
+  } else {
+    displayPercentage = Math.round(result.probability);
+  }
+  
+  const percentage = displayPercentage;
 
   const getClassificationColor = () => {
     if (result.classification === 'Human') return 'text-success';

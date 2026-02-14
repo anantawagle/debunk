@@ -272,7 +272,7 @@ export default function Dashboard() {
                         {classification !== 'Processing' && (
                           <div className="text-right">
                             <div className="text-lg font-semibold">
-                              {Math.round(confidence * 100)}%
+                              {Math.round(confidence)}%
                             </div>
                             <div className="text-xs text-muted-foreground">
                               confidence

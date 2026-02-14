@@ -11,7 +11,7 @@ export interface UsageData {
 
 export interface Detection {
   id: string;
-  contentType: 'image' | 'video' | 'text';
+  contentType: 'image' | 'video';
   classification: 'AI' | 'Human' | 'Inconclusive';
   probability: number;
   source: string;
@@ -99,19 +99,21 @@ export function addCredits(amount: number): void {
 export function getConfidenceEmoji(probability: number, classification: string): string {
   if (classification === 'Inconclusive') return '🤔';
   if (classification === 'Human') {
-    if (probability >= 0.9) return '✅';
-    if (probability >= 0.7) return '👍';
+    // probability is 0-100 (percentage)
+    if (probability >= 90) return '✅';
+    if (probability >= 70) return '👍';
     return '🤷';
   }
-  // AI
-  if (probability >= 0.9) return '🤖';
-  if (probability >= 0.7) return '⚠️';
+  // AI - probability is 0-100 (percentage)
+  if (probability >= 90) return '🤖';
+  if (probability >= 70) return '⚠️';
   return '❓';
 }
 
 export function getConfidenceLabel(probability: number): string {
-  if (probability >= 0.9) return 'Very High';
-  if (probability >= 0.75) return 'High';
-  if (probability >= 0.5) return 'Medium';
+  // probability is 0-100 (percentage)
+  if (probability >= 90) return 'Very High';
+  if (probability >= 75) return 'High';
+  if (probability >= 50) return 'Medium';
   return 'Low';
 }

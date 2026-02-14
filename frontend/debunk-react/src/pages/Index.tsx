@@ -5,12 +5,10 @@ import { DetectionUpload } from '@/components/DetectionUpload';
 import { DetectionResult } from '@/components/DetectionResult';
 import { HowItWorks } from '@/components/HowItWorks';
 import { Features } from '@/components/Features';
-import { PricingPreview } from '@/components/PricingPreview';
 import AuthModal from '@/components/AuthModal';
 import { apiClient } from '@/lib/api';
 import { toast } from 'sonner';
 import { Shield, Sparkles, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Detection } from '@/lib/credits';
 
@@ -21,7 +19,7 @@ export default function Index() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
 
-  const handleAnalyze = useCallback(async (content: File | string, type: 'image' | 'video' | 'text') => {
+  const handleAnalyze = useCallback(async (content: File | string, type: 'image' | 'video', isUrl?: boolean) => {
     if (!apiClient.isAuthenticated()) {
       toast.error('Please sign in to use the detection service.', {
         action: {
@@ -37,8 +35,13 @@ export default function Index() {
     setDetectionId(null);
 
     try {
-      // Upload content
-      const uploadResponse = await apiClient.uploadContent(content, type);
+      // Upload content - use URL endpoint if isUrl is true
+      let uploadResponse;
+      if (isUrl && typeof content === 'string') {
+        uploadResponse = await apiClient.uploadFromUrl(content, type);
+      } else {
+        uploadResponse = await apiClient.uploadContent(content as File, type);
+      }
       const id = uploadResponse.id;
       setDetectionId(id);
 
@@ -52,7 +55,7 @@ export default function Index() {
 
             const classification = detection.is_ai_generated
               ? 'AI'
-              : detection.is_ai_generated === false
+              : detection.is_ai_generated === false || detection.confidence_score === 0
                 ? 'Human'
                 : 'Inconclusive';
 
@@ -198,11 +201,6 @@ export default function Index() {
             >
               Get Started Free
             </Button>
-            <Link to="/pricing">
-              <Button variant="outline" size="lg">
-                View Pricing
-              </Button>
-            </Link>
           </div>
         </div>
       </section>

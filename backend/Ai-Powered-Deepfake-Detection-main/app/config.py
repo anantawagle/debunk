@@ -16,8 +16,12 @@ class Settings(BaseSettings):
     
     # File Upload
     MAX_UPLOAD_SIZE: int = 20 * 1024 * 1024  # 20MB
-    ALLOWED_EXTENSIONS: set = {".jpg", ".jpeg", ".png", ".webp", ".mp4", ".mov", ".webm", ".txt"}
+    ALLOWED_EXTENSIONS: set = {".jpg", ".jpeg", ".png", ".webp", ".mp4", ".mov", ".webm", ".avi", ".mkv", ".txt"}
     UPLOAD_DIR: str = "uploads"
+    
+    # App URLs
+    APP_URL: str = "http://localhost:5173"
+    API_URL: str = "http://localhost:8000"
     
     class Config:
         case_sensitive = True

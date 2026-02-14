@@ -6,6 +6,7 @@ from typing import List,Optional
 import os
 import shutil
 import json
+import httpx
 from pathlib import Path
 from app.db.session import get_db
 from app.core.deps import get_current_active_user
@@ -13,7 +14,7 @@ from app.models.user import User
 from app.schemas.detection import DetectionCreate, DetectionResponse, DetectionUpdate, DetectionList
 from app.crud import detection as crud_detection
 from app.config import settings
-from app.services.image_detector import analyze_image, analyze_video, analyze_text
+from app.services.image_detector import analyze_image, analyze_video 
 
 router = APIRouter()
 
@@ -23,55 +24,20 @@ Path(settings.UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
 @router.post("/upload", response_model=DetectionResponse, status_code=status.HTTP_201_CREATED)
 async def upload_content(
     file: UploadFile = File(None),
-    content_type: str = Form(..., description="Type of content: 'image', 'video', 'text'"),
-    text_content: str = Form(None, description="Text content if type is 'text'"),
+    content_type: str = Form(..., description="Type of content: 'image', 'video'"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
     """Upload content for detection"""
-    if content_type not in ['image', 'video', 'text']:
+    print(f"[DEBUG] Upload request received - content_type: {content_type}, filename: {file.filename if file else 'None'}")
+    print(f"[DEBUG] Allowed extensions: {settings.ALLOWED_EXTENSIONS}")
+    
+    if content_type not in ['image', 'video']:
+        print(f"[ERROR] Invalid content type: {content_type}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid content type. Must be 'image', 'video', or 'text'"
+            detail=f"Invalid content type: {content_type}. Supported types: 'image', 'video'"
         )
-
-    if content_type == 'text':
-        if not text_content or len(text_content.strip()) < 20:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Text content must be at least 20 characters"
-            )
-        # Create detection record for text
-        detection_data = DetectionCreate(
-            content_name="text_content",
-            content_size=len(text_content.encode('utf-8')),
-            content_type='text',
-            content_text=text_content.strip()
-        )
-        detection = crud_detection.create_detection(db, detection_data, current_user.id)
-    
-        try:
-            result = analyze_text(detection.content_text)
-            update_data = DetectionUpdate(
-                is_ai_generated=result["is_ai_generated"],
-                confidence_score=result["confidence_score"],
-                model_used=result["model_used"],
-                detection_details=result["detection_details"],
-                processed_at=datetime.now(timezone.utc)
-            )
-            detection = crud_detection.update_detection(db, detection.id, update_data)
-        except Exception as e:
-            print(f"Text analysis failed: {e}")
-            update_data = DetectionUpdate(
-                is_ai_generated=False,
-                confidence_score=0.0,
-                model_used="Analysis Failed",
-                detection_details=json.dumps({"error": str(e)}),
-                processed_at=datetime.now(timezone.utc)
-            )
-            detection = crud_detection.update_detection(db, detection.id, update_data)
-
-        return detection
 
     # For image/video, require file
     if not file:
@@ -136,6 +102,7 @@ async def upload_content(
             )
             detection = crud_detection.update_detection(db, detection.id, update_data)
 
+    # Video detection using custom trained model
     elif detection.content_type == 'video':
         try:
             result = analyze_video(detection.content_path)

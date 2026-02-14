@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react';
-import { Upload, Image, FileText, Video, X, Loader2, Sparkles } from 'lucide-react';
+import { Upload, Image, FileText, Video, X, Loader2, Sparkles, Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
-type ContentType = 'image' | 'video' | 'text';
+type ContentType = 'image' | 'video';
 
 interface DropZoneProps {
   type: 'image';
@@ -253,8 +254,60 @@ function TextInputArea({ textContent, onTextChange, onClear }: TextInputAreaProp
   );
 }
 
+interface UrlInputAreaProps {
+  url: string;
+  onUrlChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onClear: () => void;
+  contentType: 'image' | 'video';
+}
+
+function UrlInputArea({ url, onUrlChange, onClear, contentType }: UrlInputAreaProps) {
+  const isValidUrl = url.startsWith('http://') || url.startsWith('https://');
+  const targetType = contentType === 'image' ? 'image' : 'video';
+
+  return (
+    <div className="glass-card p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-medium">Paste {targetType} URL</h3>
+        {url && (
+          <Button variant="ghost" size="sm" onClick={onClear}>
+            <X className="h-4 w-4 mr-1" />
+            Clear
+          </Button>
+        )}
+      </div>
+      
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Link className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="url"
+              value={url}
+              onChange={onUrlChange}
+              placeholder={`Paste a direct link to your ${targetType}...`}
+              className="pl-10"
+            />
+          </div>
+        </div>
+        
+        <p className="text-xs text-muted-foreground">
+          Supported: Direct links to {contentType === 'image' ? 'PNG, JPG, JPEG, WebP' : 'MP4, MOV, AVI, WebM'} files
+        </p>
+        
+        <p className={cn(
+          "text-sm",
+          isValidUrl ? "text-green-500" : "text-muted-foreground"
+        )}>
+          {isValidUrl ? '✓ Valid URL format' : 'URL must start with http:// or https://'}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 interface DetectionUploadProps {
-  onAnalyze: (content: File | string, type: ContentType) => void;
+  onAnalyze: (content: File | string, type: ContentType, isUrl?: boolean) => void;
   isAnalyzing: boolean;
   disabled?: boolean;
 }
@@ -264,7 +317,6 @@ export function DetectionUpload({ onAnalyze, isAnalyzing, disabled }: DetectionU
   const [dragOver, setDragOver] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [textContent, setTextContent] = useState('');
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -288,30 +340,23 @@ export function DetectionUpload({ onAnalyze, isAnalyzing, disabled }: DetectionU
     }
   };
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTextContent(e.target.value);
-  };
-
   const handleClear = () => {
     setSelectedFile(null);
     setPreview(null);
-    setTextContent('');
   };
 
   const handleAnalyze = () => {
-    if (activeTab === 'text' && textContent) {
-      onAnalyze(textContent, activeTab);
-    } else if (selectedFile) {
+    if (selectedFile) {
       onAnalyze(selectedFile, activeTab);
     }
   };
 
-  const canAnalyze = activeTab === 'text' ? textContent.length >= 20 : !!selectedFile;
+  const canAnalyze = !!selectedFile;
 
   return (
     <div className="w-full max-w-2xl mx-auto">
       <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v as ContentType); handleClear(); }}>
-        <TabsList className="grid w-full grid-cols-3 mb-6 bg-secondary/50 p-1">
+        <TabsList className="grid w-full grid-cols-2 mb-6 bg-secondary/50 p-1">
           <TabsTrigger value="image" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Image className="h-4 w-4" />
             Image
@@ -319,10 +364,6 @@ export function DetectionUpload({ onAnalyze, isAnalyzing, disabled }: DetectionU
           <TabsTrigger value="video" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Video className="h-4 w-4" />
             Video
-          </TabsTrigger>
-          <TabsTrigger value="text" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            <FileText className="h-4 w-4" />
-            Text
           </TabsTrigger>
         </TabsList>
   
@@ -348,14 +389,6 @@ export function DetectionUpload({ onAnalyze, isAnalyzing, disabled }: DetectionU
             onFileSelect={handleFileSelect}
             selectedFile={selectedFile}
             preview={preview}
-            onClear={handleClear}
-          />
-        </TabsContent>
-
-        <TabsContent value="text" className="mt-0">
-          <TextInputArea
-            textContent={textContent}
-            onTextChange={handleTextChange}
             onClear={handleClear}
           />
         </TabsContent>

@@ -95,18 +95,13 @@ class ApiClient {
   }
 
   async uploadContent(
-    content: File | string,
-    contentType: 'image' | 'video' | 'text'
+    content: File,
+    contentType: 'image' | 'video'
   ): Promise<any> {
     const formData = new FormData();
 
-    if (contentType === 'text') {
-      formData.append('content_type', contentType);
-      formData.append('text_content', content as string);
-    } else {
-      formData.append('file', content as File);
-      formData.append('content_type', contentType);
-    }
+    formData.append('file', content);
+    formData.append('content_type', contentType);
 
     const response = await fetch(`${this.baseURL}/api/v1/detections/upload`, {
       method: 'POST',

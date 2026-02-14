@@ -1,0 +1,26 @@
+# Training Configuration
+lr: 0.0001
+batch_size: 32
+num_epochs: 3
+
+# Dataset paths - Using FULL dataset (GPU will handle it)
+train_paths:
+  - ./data/images/train
+
+val_paths:
+  - ./data/images/test
+
+# Use all samples since you have GPU
+max_train_samples: null
+max_val_samples: null
+
+# Early stopping settings
+early_stopping_patience: 3
+monitor_metric: val_loss
+
+# Fine-tuning settings
+fine_tune_lr: 0.00001
+
+# Logging settings
+log_every_n_steps: 10
+save_top_k: 1

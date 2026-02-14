@@ -45,9 +45,6 @@ export function Header({ onSignInClick }: HeaderProps) {
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Detect
             </Link>
-            <Link to="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Pricing
-            </Link>
             <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Dashboard
             </Link>
